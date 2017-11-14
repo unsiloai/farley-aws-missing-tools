@@ -15,12 +15,12 @@ NOTE: You may need to install boto3 on a default Ubuntu/CentOS install before th
 Current incarnation by: Farley <farley@neonsurge.com>
 '''
 
-import sys
+
 import re
 import datetime
 import subprocess
 import boto3
-from pprint import pprint
+
 
 def get_region():
     import urllib2   
@@ -29,7 +29,6 @@ def get_region():
         return region[0:-1]
     except:
         return False
-
 
 
 def get_instance_id():
@@ -58,7 +57,6 @@ def get_root_disk_usage_percentage():
     output = df.communicate()[0]
     device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
     return percent[0:-1]
-
 
 
 region = get_region()
@@ -114,6 +112,7 @@ def send_cloud_metrics_against_instance_and_autoscaler(instance_id, region, metr
                 ]
             )
 
+
 if __name__ == '__main__':
     instance_id = get_instance_id()
     mem_usage = collect_memory_usage()
@@ -130,6 +129,6 @@ if __name__ == '__main__':
                'SwapUsage': swap_percent,
                'DiskUsage': disk_usage }
 
-    result = send_cloud_metrics_against_instance_and_autoscaler(instance_id, region, metrics)
+    send_cloud_metrics_against_instance_and_autoscaler(instance_id, region, metrics)
 
     print str(datetime.datetime.now()) + ": sent metrics (" + instance_id + ": " + str(metrics) + ") to CloudWatch"
