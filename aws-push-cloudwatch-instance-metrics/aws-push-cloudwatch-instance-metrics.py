@@ -20,6 +20,7 @@ import re
 import datetime
 import subprocess
 import boto3
+import os
 
 
 def get_region():
@@ -54,6 +55,19 @@ def collect_memory_usage():
 
 def get_root_disk_usage_percentage():
     df = subprocess.Popen(["df", "/"], stdout=subprocess.PIPE)
+    output = df.communicate()[0]
+    device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
+    return percent[0:-1]
+
+
+def has_data_disk():
+    if os.path.exists("/mnt/data"):
+        return True
+    return False
+
+
+def get_data_disk_usage_percentage():
+    df = subprocess.Popen(["df", "/mnt/data"], stdout=subprocess.PIPE)
     output = df.communicate()[0]
     device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
     return percent[0:-1]
@@ -127,7 +141,11 @@ if __name__ == '__main__':
     
     metrics = {'MemUsage': mem_used / mem_usage['MemTotal'] * 100,
                'SwapUsage': swap_percent,
-               'DiskUsage': disk_usage }
+               'DiskUsage': disk_usage}
+
+    if has_data_disk():
+        data_disk_usage = get_data_disk_usage_percentage()
+        metrics['DataDiskUsage'] = data_disk_usage
 
     send_cloud_metrics_against_instance_and_autoscaler(instance_id, region, metrics)
 
