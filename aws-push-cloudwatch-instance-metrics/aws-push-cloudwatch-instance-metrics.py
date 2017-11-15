@@ -95,7 +95,7 @@ def send_cloud_metrics_against_instance_and_autoscaler(instance_id, region, metr
                         'Name': 'InstanceId',
                         'Value': instance_id
                     }],
-                    'Timestamp': datetime.datetime.now(),
+                    'Timestamp': datetime.datetime.utcnow(),
                     'Value': float(metric),
                     'Unit': unit
                 }
@@ -119,7 +119,7 @@ def send_cloud_metrics_against_instance_and_autoscaler(instance_id, region, metr
                             'Name': 'AutoScalingGroupName',
                             'Value': autoscaler['AutoScalingGroupName']
                         }],
-                        'Timestamp': datetime.datetime.now(),
+                        'Timestamp': datetime.datetime.utcnow(),
                         'Value': float(metric),
                         'Unit': unit
                     }
@@ -149,4 +149,4 @@ if __name__ == '__main__':
 
     send_cloud_metrics_against_instance_and_autoscaler(instance_id, region, metrics)
 
-    print str(datetime.datetime.now()) + ": sent metrics (" + instance_id + ": " + str(metrics) + ") to CloudWatch"
+    print str(datetime.datetime.utcnow()) + ": sent metrics (" + instance_id + ": " + str(metrics) + ") to CloudWatch"
